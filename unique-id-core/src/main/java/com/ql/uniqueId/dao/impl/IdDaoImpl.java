@@ -12,6 +12,7 @@ import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.List;
 
 /**
@@ -38,10 +39,27 @@ public class IdDaoImpl implements IdDao {
 
     @Override
     public void insert(IdEntity idEntity) {
-        jdbcTemplate.update("insert into table_unique_id values (?,?)", ps -> {
-            ps.setLong(1, idEntity.getCurrentId());
-            ps.setString(2, idEntity.getTableName());
-        });
+        Connection conn = null;
+        PreparedStatement ps = null;
+        try {
+            conn = dataSource.getConnection();
+            conn.setAutoCommit(false);
+            String sql = "insert into table_unique_id values (?,?)";
+            ps = conn.prepareStatement(sql);
+        } catch (SQLException exception) {
+            throw new IdException("Global-unique-id: " + exception.getMessage());
+        } finally {
+            JdbcUtils.closeStatement(ps);
+            if (conn != null) {
+                try {
+                    conn.commit();
+                } catch (SQLException exception) {
+                    throw new IdException("Global-unique-id: " + exception.getMessage());
+                } finally {
+                    JdbcUtils.closeConnection(conn);
+                }
+            }
+        }
     }
 
     @Override

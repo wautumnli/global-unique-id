@@ -38,4 +38,14 @@ public class UniqueTest {
         info.setName("test" + info.getId());
         infoDao.insert(info);
     }
+
+    @Test
+    public void createIdList() {
+        long begin = System.currentTimeMillis();
+        for (int i = 0; i < 1000000; i++) {
+            IdUtils.getNextId("bas_info");
+        }
+        long end = System.currentTimeMillis();
+        System.out.println(end - begin);
+    }
 }

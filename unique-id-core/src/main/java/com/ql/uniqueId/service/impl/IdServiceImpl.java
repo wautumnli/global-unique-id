@@ -1,9 +1,10 @@
-package com.ql.uniqueId.exception.service.impl;
+package com.ql.uniqueId.service.impl;
 
 import com.ql.uniqueId.dao.IdDao;
 import com.ql.uniqueId.dao.impl.IdDaoImpl;
 import com.ql.uniqueId.domain.IdEntity;
-import com.ql.uniqueId.exception.service.IdService;
+import com.ql.uniqueId.service.IdService;
+import com.ql.uniqueId.utils.IdUtils;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.PostConstruct;
@@ -36,6 +37,7 @@ public class IdServiceImpl implements IdService {
     public void init() {
         initDao();
         initMap();
+        IdUtils.setIdService(this);
     }
 
     private void initDao() {
@@ -53,6 +55,7 @@ public class IdServiceImpl implements IdService {
     }
 
 
+    @Override
     public Long getNextId(String tableName) {
         IdEntity idEntity = getIdEntity(tableName);
         return idEntity.getNextId();

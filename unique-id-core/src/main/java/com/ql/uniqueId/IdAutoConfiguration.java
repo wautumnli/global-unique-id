@@ -1,7 +1,7 @@
 package com.ql.uniqueId;
 
-import com.ql.uniqueId.exception.service.IdService;
-import com.ql.uniqueId.exception.service.impl.IdServiceImpl;
+import com.ql.uniqueId.service.IdService;
+import com.ql.uniqueId.service.impl.IdServiceImpl;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;

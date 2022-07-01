@@ -1,6 +1,6 @@
 package com.ql.uniqueId.utils;
 
-import com.ql.uniqueId.exception.service.IdService;
+import com.ql.uniqueId.service.IdService;
 
 /**
  * @author wanqiuli
@@ -12,5 +12,13 @@ public class IdUtils {
 
     public static Long getNextId(String tableName) {
         return idService.getNextId(tableName);
+    }
+
+    public static void setIdService(IdService idServiceImpl) {
+        idService = idServiceImpl;
+    }
+
+    public IdService getIdService() {
+        return idService;
     }
 }

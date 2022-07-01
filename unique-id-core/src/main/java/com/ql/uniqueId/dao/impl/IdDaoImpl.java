@@ -30,6 +30,7 @@ public class IdDaoImpl implements IdDao {
         this.dataSource = jdbcTemplate.getDataSource();
     }
 
+    @Override
     public List<IdEntity> getAllIdEntity() {
         String sql = "select current_id, table_name from table_unique_id";
         return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(IdEntity.class));
@@ -51,7 +52,7 @@ public class IdDaoImpl implements IdDao {
         try {
             conn = dataSource.getConnection();
             conn.setAutoCommit(false);
-            String sql = "update table_unique_id set current_id = LAST_INSERT_ID(`id` + ?) where table_name = ?";
+            String sql = "update table_unique_id set current_id = LAST_INSERT_ID(`current_id` + ?) where table_name = ?";
             ps = conn.prepareStatement(sql);
             ps.setLong(1, step);
             ps.setString(2, tableName);

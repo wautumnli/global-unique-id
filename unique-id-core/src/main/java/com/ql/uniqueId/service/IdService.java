@@ -1,4 +1,4 @@
-package com.ql.uniqueId.exception.service;
+package com.ql.uniqueId.service;
 
 /**
  * @author wanqiuli

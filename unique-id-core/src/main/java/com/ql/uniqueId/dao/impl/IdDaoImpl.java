@@ -46,6 +46,9 @@ public class IdDaoImpl implements IdDao {
             conn.setAutoCommit(false);
             String sql = "insert into table_unique_id values (?,?)";
             ps = conn.prepareStatement(sql);
+            ps.setLong(1, idEntity.getCurrentId());
+            ps.setString(2, idEntity.getTableName());
+            ps.execute();
         } catch (SQLException exception) {
             throw new IdException("Global-unique-id: " + exception.getMessage());
         } finally {

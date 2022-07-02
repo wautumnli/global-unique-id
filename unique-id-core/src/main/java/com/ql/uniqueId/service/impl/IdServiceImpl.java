@@ -9,6 +9,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,11 +22,12 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class IdServiceImpl implements IdService {
 
+    @Resource
+    private JdbcTemplate jdbcTemplate;
     private static final int DEFAULT_STEP = 100;
     private int step = DEFAULT_STEP;
     private final Map<String, IdEntity> tableIdMap = new ConcurrentHashMap<>();
-    @Resource
-    private JdbcTemplate jdbcTemplate;
+    private Map<String, Integer> tableStepMap = new HashMap<>();
     private IdDao idDao;
     private final Lock lock = new ReentrantLock();
 
@@ -45,11 +47,22 @@ public class IdServiceImpl implements IdService {
         idDao = new IdDaoImpl(jdbcTemplate);
     }
 
+    public void initStepMap(Map<String, Integer> stepMap) {
+        if (stepMap != null && !stepMap.isEmpty()) {
+            tableStepMap = stepMap;
+        }
+    }
+
     private void initMap() {
         // 初始化map
         List<IdEntity> allIdEntity = idDao.getAllIdEntity();
         allIdEntity.forEach(idEntity -> {
-            idEntity.init(step, idDao);
+            Integer stepVal = tableStepMap.get(idEntity.getTableName());
+            if (stepVal == null) {
+                idEntity.init(step, idDao);
+            } else {
+                idEntity.init(stepVal, idDao);
+            }
             tableIdMap.put(idEntity.getTableName(), idEntity);
         });
     }
@@ -70,7 +83,12 @@ public class IdServiceImpl implements IdService {
                 // 找不到idEntity就创建一个新的
                 if (idEntity == null) {
                     idEntity = IdEntity.create(tableName);
-                    idEntity.init(step, idDao);
+                    Integer stepVal = tableStepMap.get(idEntity.getTableName());
+                    if (stepVal == null) {
+                        idEntity.init(step, idDao);
+                    } else {
+                        idEntity.init(stepVal, idDao);
+                    }
                     idDao.insert(idEntity);
                     tableIdMap.put(tableName, idEntity);
                 }

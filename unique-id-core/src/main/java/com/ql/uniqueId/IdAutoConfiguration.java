@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.Resource;
+import java.util.Map;
 
 /**
  * @author wanqiuli
@@ -31,6 +32,7 @@ public class IdAutoConfiguration {
         if (step > 0) {
             idService.setStep(step);
         }
+        idService.initStepMap(idProperties.getTableStep());
         return idService;
     }
 }

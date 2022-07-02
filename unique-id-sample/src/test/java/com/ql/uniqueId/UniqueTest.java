@@ -1,7 +1,9 @@
 package com.ql.uniqueId;
 
 import com.ql.uniqueId.dao.InfoDao;
+import com.ql.uniqueId.dao.TextDao;
 import com.ql.uniqueId.domain.Info;
+import com.ql.uniqueId.domain.Text;
 import com.ql.uniqueId.service.IdService;
 import com.ql.uniqueId.utils.IdUtils;
 import org.junit.Test;
@@ -25,6 +27,9 @@ public class UniqueTest {
     @Resource
     private InfoDao infoDao;
 
+    @Resource
+    private TextDao textDao;
+
     @Test
     public void uniqueIdTest() {
         Long id = idService.getNextId("tb_test");
@@ -33,10 +38,24 @@ public class UniqueTest {
 
     @Test
     public void insertData() {
+        insertInfo();
+        insertText();
+    }
+
+    @Test
+    public void insertInfo() {
         Info info = new Info();
         info.setId(IdUtils.getNextId("bas_info"));
-        info.setName("test" + info.getId());
+        info.setName("info" + info.getId());
         infoDao.insert(info);
+    }
+
+    @Test
+    public void insertText() {
+        Text text = new Text();
+        text.setId(IdUtils.getNextId("bas_text"));
+        text.setText("text" + text.getId());
+        textDao.insert(text);
     }
 
     @Test

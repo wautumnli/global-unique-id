@@ -7,6 +7,13 @@ package com.ql.uniqueId.service;
 public interface IdService {
 
     /**
+     * function is init
+     *
+     * @return the {@link boolean} data
+     */
+    boolean init();
+
+    /**
      * 获取下一个Id
      *
      * @param tableName the tableName

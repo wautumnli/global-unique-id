@@ -27,12 +27,6 @@ public class IdAutoConfiguration {
 
     @Bean
     public IdService idService() {
-        IdServiceImpl idService = new IdServiceImpl();
-        int step = idProperties.getStep();
-        if (step > 0) {
-            idService.setStep(step);
-        }
-        idService.initStepMap(idProperties.getTableStep());
-        return idService;
+        return null;
     }
 }

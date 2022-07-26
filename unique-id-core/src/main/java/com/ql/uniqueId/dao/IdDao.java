@@ -1,35 +1,35 @@
 package com.ql.uniqueId.dao;
 
-import com.ql.uniqueId.domain.IdEntity;
+import com.ql.uniqueId.domain.SequencePo;
 
 import java.util.List;
 
 /**
  * @author wanqiuli
- * @date 2022/7/1 10:54
+ * @date 2022/7/26 20:24
  */
 public interface IdDao {
 
     /**
-     * 获取所有表的id
+     * 获取当前数据库存储的所有需要用到Id的模块
      *
-     * @return the {@link List<IdEntity>} data
+     * @return the {@link List<String>} data
      */
-    List<IdEntity> getAllIdEntity();
+    List<String> getAllSequenceInfo();
 
     /**
-     * 插入新表
+     * function is addSequence
      *
-     * @param idEntity the idEntity
+     * @param tableName   the tableName
+     * @param defaultStep the defaultStep
      */
-    void insert(IdEntity idEntity);
+    void addSequence(String tableName, Integer defaultStep);
 
     /**
-     * 更新并获取
+     * function is updateAndGet
      *
      * @param tableName the tableName
-     * @param step      the step
-     * @return the {@link Long} data
+     * @return the {@link SequencePo} data
      */
-    Long updateAndGetId(String tableName, int step);
+    SequencePo updateAndGet(String tableName);
 }

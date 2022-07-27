@@ -9,7 +9,7 @@ public interface IdService {
     /**
      * function is init
      *
-     * @return the {@link boolean} data
+     * @return the {@link Boolean} data
      */
     boolean init();
 

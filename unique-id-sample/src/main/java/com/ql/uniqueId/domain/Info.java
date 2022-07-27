@@ -18,10 +18,8 @@ public class Info {
     private Long id;
     private String name;
 
-    public static Info create(long id, String name) {
-        Info info = new Info();
-        info.setId(id);
-        info.setName(name);
-        return info;
+    public Info(Long id, String threadName) {
+        this.id = id;
+        this.name = threadName;
     }
 }

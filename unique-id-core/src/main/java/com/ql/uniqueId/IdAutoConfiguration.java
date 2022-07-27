@@ -4,6 +4,7 @@ import com.ql.uniqueId.dao.impl.IdDaoImpl;
 import com.ql.uniqueId.exception.IdException;
 import com.ql.uniqueId.service.IdService;
 import com.ql.uniqueId.service.impl.IdServiceImpl;
+import com.ql.uniqueId.utils.IdUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
@@ -32,6 +33,7 @@ public class IdAutoConfiguration {
         if (!idService.init()) {
             throw new IdException("[id utils] init fail");
         }
+        IdUtils.setIdService(idService);
         return idService;
     }
 }

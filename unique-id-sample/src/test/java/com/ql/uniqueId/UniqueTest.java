@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.util.StopWatch;
 
 import javax.annotation.Resource;
 
@@ -32,8 +33,12 @@ public class UniqueTest {
 
     @Test
     public void uniqueIdTest() {
-        Long id = idService.getNextId("tb_test");
-        System.out.println(id);
+        long begin = System.currentTimeMillis();
+        for (int i = 0; i < 10000; i++) {
+            idService.getNextId("test");
+        }
+        long end = System.currentTimeMillis();
+        System.out.println(end - begin);
     }
 
     @Test
@@ -44,10 +49,6 @@ public class UniqueTest {
 
     @Test
     public void insertInfo() {
-        Info info = new Info();
-        info.setId(IdUtils.getNextId("bas_info"));
-        info.setName("info" + info.getId());
-        infoDao.insert(info);
     }
 
     @Test

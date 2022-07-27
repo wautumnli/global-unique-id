@@ -143,7 +143,7 @@ public class IdServiceImpl implements IdService {
     private void threadSleep(SequenceBuffer sequenceBuffer) {
         int times = 0;
         while (sequenceBuffer.getThreadRunning().get()) {
-            if (times > 100) {
+            if (times > 1000) {
                 break;
             }
             times++;

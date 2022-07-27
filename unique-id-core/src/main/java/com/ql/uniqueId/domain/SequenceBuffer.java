@@ -82,6 +82,6 @@ public class SequenceBuffer {
     }
 
     public void setNextReady(boolean ready) {
-        this.nextReady = false;
+        this.nextReady = ready;
     }
 }

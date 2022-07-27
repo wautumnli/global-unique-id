@@ -2,12 +2,6 @@ spring:
   # Mysql配置
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver # 连接驱动
-    url: jdbc:mysql://127.0.0.1:3306/rundb?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai #连接地址
+    url: jdbc:mysql://127.0.0.1:3306/ddd?useUnicode=true&characterEncoding=UTF-8&useSSL=false&serverTimezone=Asia/Shanghai #连接地址
     username: root # Mysql账号
-    password: 521piiig # Mysql密码
-unique:
-  id:
-    step: 50
-    table-step:
-      bas_info: 50
-      bas_text: 200
+    password: root # Mysql密码

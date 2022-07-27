@@ -3,11 +3,10 @@ package com.ql.uniqueId.dao.impl;
 import com.ql.uniqueId.dao.IdDao;
 import com.ql.uniqueId.domain.SequencePo;
 import com.ql.uniqueId.exception.IdException;
+import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -16,8 +15,11 @@ import java.util.List;
  */
 public class IdDaoImpl implements IdDao {
 
-    @Resource
     private JdbcTemplate jdbcTemplate;
+
+    public IdDaoImpl(JdbcTemplate jdbcTemplate) {
+        this.jdbcTemplate = jdbcTemplate;
+    }
 
     @Override
     public List<String> getAllSequenceInfo() {
@@ -30,9 +32,9 @@ public class IdDaoImpl implements IdDao {
     public void addSequence(String tableName, Integer defaultStep) {
         String sql = "insert into sequence values(?, ?, ?)";
         int execute = jdbcTemplate.update(sql, ps -> {
-            ps.setString(1, tableName);
-            ps.setLong(2, defaultStep);
-            ps.setInt(3, defaultStep);
+            ps.setLong(1, 0);
+            ps.setInt(2, defaultStep);
+            ps.setString(3, tableName);
         });
         if (execute != 1) {
             throw new IdException("[id utils] insert new sequence error");
@@ -49,7 +51,7 @@ public class IdDaoImpl implements IdDao {
         if (execute != 1) {
             throw new IdException("[id utils] insert update sequence error");
         }
-        sql = "select current_max_id, step where t_name =" + tableName;
-        return jdbcTemplate.queryForObject(sql, SequencePo.class);
+        sql = "select current_max_id, step from sequence where t_name = ?";
+        return jdbcTemplate.queryForObject(sql, new BeanPropertyRowMapper<>(SequencePo.class), tableName);
     }
 }

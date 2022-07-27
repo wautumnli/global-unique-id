@@ -6,6 +6,7 @@ import com.ql.uniqueId.domain.SequenceBuffer;
 import com.ql.uniqueId.domain.SequencePo;
 import com.ql.uniqueId.exception.IdException;
 import com.ql.uniqueId.service.IdService;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -14,6 +15,7 @@ import java.util.concurrent.*;
  * @author wanqiuli
  * @date 2022/7/26 20:18
  */
+@Slf4j
 public class IdServiceImpl implements IdService {
 
     private IdDao idDao;
@@ -31,8 +33,8 @@ public class IdServiceImpl implements IdService {
         }
 
         @Override
-        public Thread newThread(Runnable r) {
-            return new Thread(r, "Thread-Segment-Update-" + nextThreadNum());
+        public Thread newThread(Runnable runnable) {
+            return new Thread(runnable, "Thread-Segment-Update-" + nextThreadNum());
         }
     }
 
@@ -90,7 +92,25 @@ public class IdServiceImpl implements IdService {
                 if (segment.needNextSegment()
                         && sequenceBuffer.nextNotReady()
                         && sequenceBuffer.getThreadRunning().compareAndSet(false, true)) {
-                    // TODO 开启线程更新
+                    threadPoolExecutor.execute(() -> {
+                        Segment nextSegment = sequenceBuffer.nextSegment();
+                        boolean updateOver = false;
+                        try {
+                            updateSequenceBufferSegment(sequenceBuffer.getSequence(), nextSegment);
+                            updateOver = true;
+                        } catch (Exception e) {
+                            log.error("[id utils] next segment update error");
+                        } finally {
+                            if (updateOver) {
+                                sequenceBuffer.wLock().lock();
+                                sequenceBuffer.setNextReady(true);
+                                sequenceBuffer.getThreadRunning().set(false);
+                                sequenceBuffer.wLock().unlock();
+                            } else {
+                                sequenceBuffer.getThreadRunning().set(false);
+                            }
+                        }
+                    });
                 }
                 long currentId = segment.getCurrentId().incrementAndGet();
                 if (currentId < segment.getMax()) {
@@ -99,7 +119,8 @@ public class IdServiceImpl implements IdService {
             } finally {
                 sequenceBuffer.rLock().unlock();
             }
-            // TODO 可以让当前线程睡眠一会，因为前面已经开启了更新
+            // 可以让当前线程睡眠一会，因为前面已经开启了更新
+            threadSleep(sequenceBuffer);
             sequenceBuffer.wLock().lock();
             try {
                 Segment segment = sequenceBuffer.currentSegment();
@@ -107,9 +128,30 @@ public class IdServiceImpl implements IdService {
                 if (currentId < segment.getMax()) {
                     return currentId;
                 }
-                // TODO 否则的话切换到下一段
+                if (sequenceBuffer.nextIsReady()) {
+                    sequenceBuffer.switchPos();
+                    sequenceBuffer.setNextReady(false);
+                } else {
+                    throw new IdException("[id utils] both segment not ready");
+                }
             } finally {
                 sequenceBuffer.wLock().unlock();
+            }
+        }
+    }
+
+    private void threadSleep(SequenceBuffer sequenceBuffer) {
+        int times = 0;
+        while (sequenceBuffer.getThreadRunning().get()) {
+            if (times > 100) {
+                break;
+            }
+            times++;
+            try {
+                TimeUnit.MILLISECONDS.sleep(10);
+            } catch (InterruptedException e) {
+                log.error("[id utils] thread interrupted exception");
+                break;
             }
         }
     }

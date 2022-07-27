@@ -1,7 +1,6 @@
 package com.ql.uniqueId.domain;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
@@ -50,15 +49,19 @@ public class SequenceBuffer {
         return segments[getCurrentPos()];
     }
 
+    public Segment nextSegment() {
+        return segments[nextPos()];
+    }
+
     private int getCurrentPos() {
         return currentPos;
     }
 
     public void switchPos() {
-        currentPos = nextPost();
+        currentPos = nextPos();
     }
 
-    private int nextPost() {
+    private int nextPos() {
         return currentPos ^ 1;
     }
 
@@ -76,5 +79,9 @@ public class SequenceBuffer {
 
     public AtomicBoolean getThreadRunning() {
         return threadRunning;
+    }
+
+    public void setNextReady(boolean ready) {
+        this.nextReady = false;
     }
 }
